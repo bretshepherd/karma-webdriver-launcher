@@ -15,15 +15,13 @@ var WebDriverInstance = function (baseBrowserDecorator, args) {
 
 
   this.kill = function(done) {
-    if (!driver) {
-      return process.nextTick(done);
-    }
+     if (!self.browser) {
+       return process.nextTick(done);
+     }
 
-    clearTimeout(pendingHeartBeat);
-    log.debug('Shutting down the %s driver', browserName);
     // workaround - navigate to other page to avoid re-connection
-    driver.get('about:blank', function() {
-      driver.quit(done);
+    self.browser.get('about:blank', function() {
+      self.browser.quit(done);
     });
   };
 
