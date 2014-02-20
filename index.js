@@ -14,12 +14,18 @@ var WebDriverInstance = function (baseBrowserDecorator, args) {
   this.name = args.browserName + ' via Remote WebDriver';
 
 
-  this.kill = function(callback) {
-    self.browser.quit(function() {
-      console.log('Killed ' + args.name + '.');
-      callback();
+  this.kill = function(done) {
+    if (!driver) {
+      return process.nextTick(done);
+    }
+
+    clearTimeout(pendingHeartBeat);
+    log.debug('Shutting down the %s driver', browserName);
+    // workaround - navigate to other page to avoid re-connection
+    driver.get('about:blank', function() {
+      driver.quit(done);
     });
-  }
+  };
 
   this._start = function (url) {
     self.browser = wd.remote(config);
